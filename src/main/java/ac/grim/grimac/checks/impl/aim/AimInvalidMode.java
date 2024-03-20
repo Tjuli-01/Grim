@@ -24,7 +24,13 @@ public class AimInvalidMode extends Check implements RotationCheck {
 
         double modeX = rotationUpdate.getProcessor().modeX;
         double modeY = rotationUpdate.getProcessor().modeY;
-
+        double sensitivityX = ((int) (player.getHorizontalSensitivity() * 200));
+        double sensitivityY = ((int) (player.getVerticalSensitivity() * 200));
+        if(sensitivityX < 5 || sensitivityY < 5  || sensitivityX > 195 || sensitivityY > 195) {
+            //rotationUpdate.isCinematic() sadly doesn't do anything (it isn't even set). if you don't believe me check with Ctrl + Shift + F
+            xRotsSinceModeChange = yRotsSinceModeChange = 0;
+            return;
+        }
 
         if (((modeX == lastModeX) != (modeY == lastModeY)) && (lastModeX != 0 && lastModeY != 0 && lastModeX < 1 && lastModeY < 1)) {
             if (rotationUpdate.getDeltaXRotABS() > 0 && rotationUpdate.getDeltaXRotABS() < 5 && rotationUpdate.getProcessor().divisorX > GrimMath.MINIMUM_DIVISOR) {
@@ -35,7 +41,7 @@ public class AimInvalidMode extends Check implements RotationCheck {
             }
 
             //Need some buffer bc the player can change sensitivity
-            if (xRotsSinceModeChange > maxRots && yRotsSinceModeChange > maxRots) {
+            if (xRotsSinceModeChange >= maxRots && yRotsSinceModeChange >= maxRots) {
                 flagAndAlert("modeX=" + modeX + " lmodeX=" + lastModeX + " modeY=" + modeY + " lmodeY=" + lastModeY);
             }
 

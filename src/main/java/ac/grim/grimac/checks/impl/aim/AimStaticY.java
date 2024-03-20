@@ -6,7 +6,7 @@ import ac.grim.grimac.checks.type.RotationCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
 
-@CheckData(name = "AimStaticX")
+@CheckData(name = "AimStaticY")
 public class AimStaticY extends Check implements RotationCheck {
     public AimStaticY(GrimPlayer playerData) {
         super(playerData);
@@ -25,15 +25,15 @@ public class AimStaticY extends Check implements RotationCheck {
         if(player.compensatedEntities.getSelf().getRiding() != null) {
             return; //Fix false positives in boats and other entities
         }
-        if(!(Math.abs(rotationUpdate.getTo().getPitch()) < 90)) {
+        if(Math.abs(rotationUpdate.getTo().getPitch()) == 90) {
             return; //Ignore 90 and -90 pitch rotations
         }
         if(player.packetStateData.lastPacketWasTeleport) {
             return;
         }
-        if (deltaY < maxDeltaY && deltaX > minDeltaX) {
+        if (deltaY <= maxDeltaY && deltaX >= minDeltaX) {
             if (buffer++ > maxBuffer) {
-                flagAndAlert(formatOffset(deltaY));
+                flagAndAlert("deltaY=" + deltaY + " deltaX=" + deltaX);
 
             }
         } else {

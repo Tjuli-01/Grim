@@ -12,7 +12,6 @@ public class AimConstant extends Check implements RotationCheck {
         super(playerData);
     }
 
-
     private double buffer = 0;
     private double decay;
     private int maxBuffer;
@@ -27,20 +26,18 @@ public class AimConstant extends Check implements RotationCheck {
         double lastDeltaRot = Math.hypot(lastDeltaX, lastDeltaY);
         double deltaRotAccel = Math.abs(deltaRot - lastDeltaRot);
 
-        //alert("dRA=" + deltaRotAccel + " dA=" + deltaAccel + " diff=" + Math.abs(deltaRotAccel - deltaAccel));
         if(player.compensatedEntities.getSelf().getRiding() != null) {
             return; //Fix false positives in boats and other entities
         }
-        if(!(Math.abs(rotationUpdate.getTo().getPitch()) < 90)) {
+        if(Math.abs(rotationUpdate.getTo().getPitch()) == 90) {
             return; //Ignore 90 and -90 pitch rotations
         }
         if(player.packetStateData.lastPacketWasTeleport) {
             return;
         }
-
-        if (deltaRotAccel < maxDeltaRotAccel && deltaRot > minDeltaRot ) {
+        if (deltaRotAccel <= maxDeltaRotAccel && deltaRot >= minDeltaRot ) {
             if (buffer++ > maxBuffer) {
-                flagAndAlert(formatOffset(deltaRotAccel));
+                flagAndAlert("accel=" + deltaRotAccel + " rot=" + deltaRot);
 
             }
         } else {
@@ -61,6 +58,6 @@ public class AimConstant extends Check implements RotationCheck {
         maxBuffer = getConfig().getIntElse(getConfigName() + ".buffer", 7);
         decay = getConfig().getDoubleElse(getConfigName() + ".decay", 0.3);
         minDeltaRot = getConfig().getDoubleElse(getConfigName() + ".minDeltaRot", 0.4D);
-        maxDeltaRotAccel = getConfig().getDoubleElse(getConfigName() + ".maxDeltaRotAccel", 0.1D);
+        maxDeltaRotAccel = getConfig().getDoubleElse(getConfigName() + ".maxDeltaRotAccel", 0.0001D);
     }
 }

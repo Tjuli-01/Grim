@@ -27,16 +27,16 @@ public class AimConstantY extends Check implements RotationCheck {
         if(player.compensatedEntities.getSelf().getRiding() != null) {
             return; //Fix false positives in boats and other entities
         }
-        if(!(Math.abs(rotationUpdate.getTo().getPitch()) < 90)) {
+        if(Math.abs(rotationUpdate.getTo().getPitch()) == 90) {
             return; //Ignore 90 and -90 pitch rotations
         }
         if(player.packetStateData.lastPacketWasTeleport) {
             return;
         }
 
-        if (deltaYAccel < maxDeltaYAccel && deltaY > minDeltaY) {
+        if (deltaYAccel <= maxDeltaYAccel && deltaY >= minDeltaY) {
             if (buffer++ > maxBuffer) {
-                flagAndAlert(formatOffset(deltaYAccel));
+                flagAndAlert("accelY=" + deltaYAccel + " rotY=" + deltaY);
 
             }
         } else {
@@ -56,6 +56,6 @@ public class AimConstantY extends Check implements RotationCheck {
         maxBuffer = getConfig().getIntElse(getConfigName() + ".buffer", 7);
         decay = getConfig().getDoubleElse(getConfigName() + ".decay", 0.3);
         minDeltaY = getConfig().getDoubleElse(getConfigName() + ".minDeltaY", 0.4D);
-        maxDeltaYAccel = getConfig().getDoubleElse(getConfigName() + ".maxDeltaYAccel", 0.1D);
+        maxDeltaYAccel = getConfig().getDoubleElse(getConfigName() + ".maxDeltaYAccel", 0.0001D);
     }
 }

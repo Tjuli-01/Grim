@@ -25,16 +25,16 @@ public class AimStaticX extends Check implements RotationCheck {
         if(player.compensatedEntities.getSelf().getRiding() != null) {
             return; //Fix false positives in boats and other entities
         }
-        if(!(Math.abs(rotationUpdate.getTo().getPitch()) < 90)) {
+        if(Math.abs(rotationUpdate.getTo().getPitch()) == 90) {
             return; //Ignore 90 and -90 pitch rotations
         }
 
         if(player.packetStateData.lastPacketWasTeleport) {
             return;
         }
-        if (deltaX < maxDeltaX && deltaY > minDeltaY) {
+        if (deltaX <= maxDeltaX && deltaY >= minDeltaY) {
             if (buffer++ > maxBuffer) {
-                flagAndAlert(formatOffset(deltaX));
+                flagAndAlert("deltaX=" +deltaX + " deltaY=" + deltaY);
 
             }
         } else {

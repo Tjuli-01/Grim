@@ -166,19 +166,19 @@ AimConstant:
   #La rotation minimale de l'échantillon pour permettre cette vérification
   minDeltaRot: 0.4
   #L'accélération maximale pour que la vérification soit signalée.
-  maxDeltaRotAccel: 0.1
+  maxDeltaRotAccel: 0.0001
 
 AimConstantX:
   buffer: 7
   decay: 0.3
   minDeltaX: 0.4
-  maxDeltaXAccel: 0.1
+  maxDeltaXAccel: 0.0001
 
 AimConstantY:
   buffer: 7
   decay: 0.3
   minDeltaY: 0.4
-  maxDeltaYAccel: 0.1
+  maxDeltaYAccel: 0.0001
 
 AimDivisorX:
   #Combien de rotations sont collectées pour vérifier
@@ -208,12 +208,9 @@ AimStaticY:
   minDeltaX: 1
   maxDeltaY: 0.0001
 
-AimInvalidSensitivity:
-  #Le nombre maximum de rotations après la première détection avant le signalement (nécessaire parce que le joueur peut changer la sensibilité du client).
-  #Il serait prudent d'abaisser cette valeur, mais si un client échoue une fois, il échouera à nouveau, quel que soit le tampon.
-  maxRots: 80
 
 AimInvalidMode:
+  #Le nombre maximum de rotations après la première détection avant le signalement (nécessaire parce que le joueur peut changer la sensibilité du client).
   maxRots: 80
 
 KillauraAccuracy:
@@ -221,6 +218,8 @@ KillauraAccuracy:
   sampleSize: 25
   #La distance minimale pour que cette vérification soit activée
   minDistance: 0.7
+  maxCombatDuration: 10
+  minAverageTargetMovement: 0.3
 
 # Activer l'enregistrement des plugins ayant injecté dans Netty lors de la connexion pour déboguer les problèmes de compatibilité
 debug-pipeline-on-join: false

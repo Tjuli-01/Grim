@@ -29,7 +29,7 @@ public class AimDivisorX extends Check implements RotationCheck {
         if(player.compensatedEntities.getSelf().getRiding() != null) {
             return; //Fix false positives in boats and other entities
         }
-        if(!(Math.abs(rotationUpdate.getTo().getPitch()) < 90)) {
+        if(Math.abs(rotationUpdate.getTo().getPitch()) == 90) {
             return; //Ignore 90 and -90 pitch rotations
         }
         if(player.packetStateData.lastPacketWasTeleport) {
@@ -41,8 +41,9 @@ public class AimDivisorX extends Check implements RotationCheck {
         if(invalidDivisorList.size() >= sampleSize) {
             double averageRot = BetterStream.getAverageDouble(rotationList);
             if(getRowCount() > maxInvalidRows && averageRot > minAverageRot) {
-                flagAndAlert("rows=" +getRowCount() + " avg=" + averageRot);
+                flagAndAlert("rows=" + getRowCount() + " avg=" + averageRot);
             }
+
         }
 
 
