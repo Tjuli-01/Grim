@@ -82,7 +82,9 @@ Punishments:
       - "Killaura"
       - "Aim"
     commands:
-      - "20:40 [alert]"
+      - "5:5 [alert]"
+      - "5:5 [webhook]"
+      - "5:5 [proxy]"
   # По состоянию на 2.2.10 нет проверок AutoClicker, и это место для размещения. Grim будет включать проверки AutoClicker в будущем.
   Autoclicker:
     remove-violations-after: 300

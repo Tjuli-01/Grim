@@ -210,10 +210,13 @@ AimStaticY:
   minDeltaX: 1
   maxDeltaY: 0.0001
 
-
 AimInvalidMode:
   #Максимальное количество оборотов после первого обнаружения до установки флага (необходимо, потому что игрок может изменить чувствительность клиента).
   maxRots: 80
+
+AimSensitivityDifference:
+  maxDifference: 5
+  minSensitivity: 1
 
 KillauraAccuracy:
   maxAccuracy: 95

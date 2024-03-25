@@ -58,8 +58,8 @@ public class CheckManager {
     public CheckManager(GrimPlayer player) {
         // Include post checks in the packet check too
         packetChecks = new ImmutableClassToInstanceMap.Builder<PacketCheck>()
-                .put(KillauraAccuracy.class, new KillauraAccuracy(player))
                 .put(Reach.class, new Reach(player))
+                .put(KillauraAccuracy.class, new KillauraAccuracy(player))
                 .put(PacketEntityReplication.class, new PacketEntityReplication(player))
                 .put(PacketChangeGameState.class, new PacketChangeGameState(player))
                 .put(CompensatedInventory.class, new CompensatedInventory(player))
@@ -111,6 +111,7 @@ public class CheckManager {
                 .put(AimStaticY.class, new AimStaticY(player))
                 .put(AimInvalidSensitivity.class, new AimInvalidSensitivity(player))
                 .put(AimInvalidMode.class, new AimInvalidMode(player))
+                .put(AimSensitivityDifference.class, new AimSensitivityDifference(player))
                 .build();
         vehicleCheck = new ImmutableClassToInstanceMap.Builder<VehicleCheck>()
                 .put(VehiclePredictionRunner.class, new VehiclePredictionRunner(player))

@@ -214,10 +214,13 @@ AimStaticY:
   minDeltaX: 1
   maxDeltaY: 0.0001
 
-
 AimInvalidMode:
   #El número máximo de rotaciones después de la primera detección antes de marcar (necesario porque el jugador puede cambiar la sensibilidad del cliente).
   maxRots: 80
+
+AimSensitivityDifference:
+  maxDifference: 5
+  minSensitivity: 1
 
 KillauraAccuracy:
   maxAccuracy: 95

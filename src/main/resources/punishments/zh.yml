@@ -82,7 +82,9 @@ Punishments:
       - "Killaura"
       - "Aim"
     commands:
-      - "20:40 [alert]"
+      - "5:5 [alert]"
+      - "5:5 [webhook]"
+      - "5:5 [proxy]"
   # Grim2.0.10版本 没有连点器检查，Grim将在未来添加
   Autoclicker:
     remove-violations-after: 300

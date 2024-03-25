@@ -13,8 +13,8 @@ public class AimInvalidMode extends Check implements RotationCheck {
         super(playerData);
     }
 
-    double lastModeX = 0;
-    double lastModeY = 0;
+    double lastModeX = -5;
+    double lastModeY = -5;
     int xRotsSinceModeChange = 0, yRotsSinceModeChange = 0;
     int maxRots;
 
@@ -32,7 +32,7 @@ public class AimInvalidMode extends Check implements RotationCheck {
             return;
         }
 
-        if (((modeX == lastModeX) != (modeY == lastModeY)) && (lastModeX != 0 && lastModeY != 0 && lastModeX < 1 && lastModeY < 1)) {
+        if (((modeX == lastModeX) != (modeY == lastModeY)) && (lastModeX != -5 && lastModeY != -5 && lastModeX < 1 && lastModeY < 1)) {
             if (rotationUpdate.getDeltaXRotABS() > 0 && rotationUpdate.getDeltaXRotABS() < 5 && rotationUpdate.getProcessor().divisorX > GrimMath.MINIMUM_DIVISOR) {
                 xRotsSinceModeChange++;
             }

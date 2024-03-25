@@ -210,10 +210,13 @@ AimStaticY:
   minDeltaX: 1
   maxDeltaY: 0.0001
 
-
 AimInvalidMode:
   #The maximum number of rotations after the first detection before flagging (needed because the player can change the client sensitivity).
   maxRots: 80
+
+AimSensitivityDifference:
+  maxDifference: 5
+  minSensitivity: 1
 
 KillauraAccuracy:
   maxAccuracy: 95

@@ -18,8 +18,7 @@ public class AimInvalidSensitivity extends Check implements RotationCheck {
 
         int sensitivityX = (int) (player.getHorizontalSensitivity() * 200);
         int sensitivityY = (int) (player.getVerticalSensitivity() * 200);
-        if (sensitivityX > 200 || sensitivityX < -1 || sensitivityY > 200 || sensitivityY < -1) {
-            //need to check for < -1 cause cinematic camera
+        if ((sensitivityX > 200 && sensitivityY > 200) || (sensitivityX < 0  && sensitivityY < 0)) {
             flagAndAlert("sensitivityX=" + sensitivityX + "% sensitivityY=" + sensitivityY + "%");
         }
     }
