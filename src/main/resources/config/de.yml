@@ -217,7 +217,7 @@ AimStaticY:
 
 AimInvalidMode:
   #Die maximale Anzahl von Umdrehungen nach der ersten Erkennung, bevor eine Markierung erfolgt (erforderlich, weil der Spieler die Empfindlichkeit des Clients ändern kann).
-  maxRots: 80
+  maxRots: 500
 
 AimSensitivityDifference:
   maxDifference: 5

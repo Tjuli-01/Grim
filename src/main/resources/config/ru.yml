@@ -217,7 +217,7 @@ AimStaticY:
 
 AimInvalidMode:
   #Максимальное количество оборотов после первого обнаружения до установки флага (необходимо, потому что игрок может изменить чувствительность клиента).
-  maxRots: 80
+  maxRots: 500
 
 AimSensitivityDifference:
   maxDifference: 5

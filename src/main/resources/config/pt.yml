@@ -225,7 +225,7 @@ AimStaticY:
 
 AimInvalidMode:
   #O número máximo de rotações após a primeira deteção antes de ser assinalado (necessário porque o jogador pode alterar a sensibilidade do cliente).
-  maxRots: 80
+  maxRots: 500
 
 AimSensitivityDifference:
   maxDifference: 5

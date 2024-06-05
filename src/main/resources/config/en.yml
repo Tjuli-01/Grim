@@ -217,7 +217,7 @@ AimStaticY:
 
 AimInvalidMode:
   #The maximum number of rotations after the first detection before flagging (needed because the player can change the client sensitivity).
-  maxRots: 80
+  maxRots: 500
 
 AimSensitivityDifference:
   maxDifference: 5

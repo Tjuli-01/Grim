@@ -214,7 +214,7 @@ AimStaticY:
 
 AimInvalidMode:
   #第一次检测后标记前的最大旋转次数（因为玩家可以更改客户端灵敏度，所以需要此值）。
-  maxRots: 80
+  maxRots: 500
 
 AimSensitivityDifference:
   maxDifference: 5
