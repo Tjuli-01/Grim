@@ -42,7 +42,7 @@ public class KillauraAccuracy extends Check implements PacketCheck {
                 return;
             }
             PacketEntity target = player.compensatedEntities.entityMap.get(action.getEntityId());
-            if (target.type != EntityTypes.PLAYER) {
+            if (target.getType() != EntityTypes.PLAYER) {
                 return;
             }
             if(target.getPossibleCollisionBoxes().distance(player.boundingBox) > minDistance) {
