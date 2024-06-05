@@ -24,6 +24,7 @@ import com.github.retrooper.packetevents.protocol.player.ClientVersion;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
+import com.github.retrooper.packetevents.protocol.world.Dimension;
 import com.github.retrooper.packetevents.protocol.world.chunk.BaseChunk;
 import com.github.retrooper.packetevents.protocol.world.chunk.impl.v1_16.Chunk_v1_9;
 import com.github.retrooper.packetevents.protocol.world.chunk.impl.v_1_18.Chunk_v1_18;
@@ -200,7 +201,7 @@ public class CompensatedWorld {
 
     public boolean isNearHardEntity(SimpleCollisionBox playerBox) {
         for (PacketEntity entity : player.compensatedEntities.entityMap.values()) {
-            if ((EntityTypes.isTypeInstanceOf(entity.type, EntityTypes.BOAT) || entity.type == EntityTypes.SHULKER) && player.compensatedEntities.getSelf().getRiding() != entity) {
+            if ((EntityTypes.isTypeInstanceOf(entity.getType(), EntityTypes.BOAT) || entity.getType() == EntityTypes.SHULKER) && player.compensatedEntities.getSelf().getRiding() != entity) {
                 SimpleCollisionBox box = entity.getPossibleCollisionBoxes();
                 if (box.isIntersected(playerBox)) {
                     return true;
@@ -291,9 +292,9 @@ public class CompensatedWorld {
     }
 
     public void tickOpenable(int blockX, int blockY, int blockZ) {
-        WrappedBlockState data = player.compensatedWorld.getWrappedBlockStateAt(blockX, blockY, blockZ);
-
-        if (BlockTags.WOODEN_DOORS.contains(data.getType()) || (player.getClientVersion().isOlderThan(ClientVersion.V_1_8) && data.getType() == StateTypes.IRON_DOOR)) {
+        final WrappedBlockState data = player.compensatedWorld.getWrappedBlockStateAt(blockX, blockY, blockZ);
+        final StateType type = data.getType();
+        if (BlockTags.WOODEN_DOORS.contains(type) || (player.getClientVersion().isOlderThan(ClientVersion.V_1_8) && type == StateTypes.IRON_DOOR)) {
             WrappedBlockState otherDoor = player.compensatedWorld.getWrappedBlockStateAt(blockX,
                     blockY + (data.getHalf() == Half.LOWER ? 1 : -1), blockZ);
 
@@ -315,12 +316,13 @@ public class CompensatedWorld {
                     player.compensatedWorld.updateBlock(blockX, blockY - 1, blockZ, otherDoor.getGlobalId());
                 }
             }
-        } else if (BlockTags.WOODEN_TRAPDOORS.contains(data.getType()) || BlockTags.FENCE_GATES.contains(data.getType())
-                || (player.getClientVersion().isOlderThan(ClientVersion.V_1_8) && data.getType() == StateTypes.IRON_TRAPDOOR)) {
+        } else if ((player.getClientVersion().isOlderThan(ClientVersion.V_1_8) || type != StateTypes.IRON_TRAPDOOR) // 1.7 can open iron trapdoors.
+                    && BlockTags.TRAPDOORS.contains(type)
+                    || BlockTags.FENCE_GATES.contains(type)) {
             // Take 12 most significant bytes -> the material ID.  Combine them with the new block magic data.
             data.setOpen(!data.isOpen());
             player.compensatedWorld.updateBlock(blockX, blockY, blockZ, data.getGlobalId());
-        } else if (BlockTags.BUTTONS.contains(data.getType())) {
+        } else if (BlockTags.BUTTONS.contains(type)) {
             data.setPowered(true);
         }
     }
@@ -330,7 +332,7 @@ public class CompensatedWorld {
         // Occurs on player login
         if (player.boundingBox == null) return;
 
-        SimpleCollisionBox expandedBB = GetBoundingBox.getBoundingBoxFromPosAndSize(player.lastX, player.lastY, player.lastZ, 0.001f, 0.001f);
+        SimpleCollisionBox expandedBB = GetBoundingBox.getBoundingBoxFromPosAndSize(player, player.lastX, player.lastY, player.lastZ, 0.001f, 0.001f);
         expandedBB.expandToAbsoluteCoordinates(player.x, player.y, player.z);
         SimpleCollisionBox playerBox = expandedBB.copy().expand(1);
 
@@ -670,11 +672,22 @@ public class CompensatedWorld {
         return minHeight;
     }
 
-    public void setDimension(String dimension, User user) {
+    public void setDimension(Dimension dimension, User user) {
         // No world height NBT
         if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_17)) return;
 
-        NBTCompound dimensionNBT = user.getWorldNBT(dimension).getCompoundTagOrNull("element");
+        final NBTCompound worldNBT = user.getWorldNBT(dimension);
+
+        final NBTCompound dimensionNBT = worldNBT.getCompoundTagOrNull("element");
+        // Mojang has decided to save another 1MB an hour by not sending data the client has "preinstalled"
+        // This code runs in 1.20.5+ with default world datapacks
+        if (dimensionNBT == null && user.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_20_5)) {
+            minHeight = user.getMinWorldHeight();
+            maxHeight = user.getMinWorldHeight() + user.getTotalWorldHeight();
+            return;
+        }
+
+        // Else get the heights directly from the NBT
         minHeight = dimensionNBT.getNumberTagOrThrow("min_y").getAsInt();
         maxHeight = minHeight + dimensionNBT.getNumberTagOrThrow("height").getAsInt();
     }

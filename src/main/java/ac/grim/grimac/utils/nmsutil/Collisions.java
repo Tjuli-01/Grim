@@ -54,7 +54,7 @@ public class Collisions {
 
     public static boolean slowCouldPointThreeHitGround(GrimPlayer player, double x, double y, double z) {
         SimpleCollisionBox oldBB = player.boundingBox;
-        player.boundingBox = GetBoundingBox.getBoundingBoxFromPosAndSize(x, y, z, 0.6f, 0.06f);
+        player.boundingBox = GetBoundingBox.getBoundingBoxFromPosAndSize(player, x, y, z, 0.6f, 0.06f);
 
         double posXZ = Collisions.collide(player, 0.03, -0.03, 0.03).getY();
         double negXNegZ = Collisions.collide(player, -0.03, -0.03, -0.03).getY();
@@ -73,8 +73,8 @@ public class Collisions {
     public static Vector collide(GrimPlayer player, double desiredX, double desiredY, double desiredZ, double clientVelY, VectorData data) {
         if (desiredX == 0 && desiredY == 0 && desiredZ == 0) return new Vector();
 
-        SimpleCollisionBox grabBoxesBB = player.boundingBox.copy();
-        double stepUpHeight = player.getMaxUpStep();
+        final SimpleCollisionBox grabBoxesBB = player.boundingBox.copy();
+        final double stepUpHeight = player.getMaxUpStep();
 
         if (desiredX == 0.0 && desiredZ == 0.0) {
             if (desiredY > 0.0) {
@@ -102,7 +102,7 @@ public class Collisions {
         double bestInput = Double.MAX_VALUE;
         Vector bestOrderResult = null;
 
-        Vector bestTheoreticalCollisionResult = VectorUtils.cutBoxToVector(player.actualMovement, new SimpleCollisionBox(0, Math.min(0, desiredY), 0, desiredX, Math.max(0.6, desiredY), desiredZ).sort());
+        Vector bestTheoreticalCollisionResult = VectorUtils.cutBoxToVector(player.actualMovement, new SimpleCollisionBox(0, Math.min(0, desiredY), 0, desiredX, Math.max(stepUpHeight, desiredY), desiredZ).sort());
         int zeroCount = (desiredX == 0 ? 1 : 0) + (desiredY == 0 ? 1 : 0) + (desiredZ == 0 ? 1 : 0);
 
         for (List<Axis> order : (data != null && data.isZeroPointZeroThree() ? allAxisCombinations : nonStupidityCombinations)) {
@@ -428,7 +428,7 @@ public class Collisions {
                     if (blockType == StateTypes.BUBBLE_COLUMN && player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_13)) {
                         WrappedBlockState blockAbove = player.compensatedWorld.getWrappedBlockStateAt(i, j + 1, k);
 
-                        if (player.compensatedEntities.getSelf().getRiding() != null && EntityTypes.isTypeInstanceOf(player.compensatedEntities.getSelf().getRiding().type, EntityTypes.BOAT)) {
+                        if (player.compensatedEntities.getSelf().getRiding() != null && EntityTypes.isTypeInstanceOf(player.compensatedEntities.getSelf().getRiding().getType(), EntityTypes.BOAT)) {
                             if (!blockAbove.getType().isAir()) {
                                 if (block.isDrag()) {
                                     player.clientVelocity.setY(Math.max(-0.3D, player.clientVelocity.getY() - 0.03D));

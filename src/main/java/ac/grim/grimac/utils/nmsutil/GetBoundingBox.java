@@ -16,8 +16,7 @@ public class GetBoundingBox {
     public static SimpleCollisionBox getPacketEntityBoundingBox(GrimPlayer player, double centerX, double minY, double centerZ, PacketEntity entity) {
         float width = BoundingBoxSize.getWidth(player, entity);
         float height = BoundingBoxSize.getHeight(player, entity);
-
-        return getBoundingBoxFromPosAndSize(centerX, minY, centerZ, width, height);
+        return getBoundingBoxFromPosAndSize(entity, centerX, minY, centerZ, width, height);
     }
 
     // Size regular: 0.6 width 1.8 height
@@ -27,11 +26,18 @@ public class GetBoundingBox {
     public static SimpleCollisionBox getPlayerBoundingBox(GrimPlayer player, double centerX, double minY, double centerZ) {
         float width = player.pose.width;
         float height = player.pose.height;
-
-        return getBoundingBoxFromPosAndSize(centerX, minY, centerZ, width, height);
+        return getBoundingBoxFromPosAndSize(player, centerX, minY, centerZ, width, height);
     }
 
-    public static SimpleCollisionBox getBoundingBoxFromPosAndSize(double centerX, double minY, double centerZ, float width, float height) {
+    public static SimpleCollisionBox getBoundingBoxFromPosAndSize(GrimPlayer player, double centerX, double minY, double centerZ, float width, float height) {
+        return getBoundingBoxFromPosAndSize(player.compensatedEntities.getSelf(), centerX, minY, centerZ, width, height);
+    }
+
+    public static SimpleCollisionBox getBoundingBoxFromPosAndSize(PacketEntity entity, double centerX, double minY, double centerZ, float width, float height) {
+        return getBoundingBoxFromPosAndSizeRaw(centerX, minY, centerZ, width * entity.scale, height * entity.scale);
+    }
+
+    public static SimpleCollisionBox getBoundingBoxFromPosAndSizeRaw(double centerX, double minY, double centerZ, float width, float height) {
         double minX = centerX - (width / 2f);
         double maxX = centerX + (width / 2f);
         double maxY = minY + height;

@@ -21,7 +21,6 @@ import ac.grim.grimac.checks.type.PacketCheck;
 import ac.grim.grimac.player.GrimPlayer;
 import ac.grim.grimac.utils.collisions.datatypes.SimpleCollisionBox;
 import ac.grim.grimac.utils.data.packetentity.PacketEntity;
-import ac.grim.grimac.utils.math.VectorUtils;
 import ac.grim.grimac.utils.nmsutil.ReachUtils;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityType;
@@ -83,7 +82,7 @@ public class Reach extends Check implements PacketCheck {
             if (entity.isDead) return;
 
             // TODO: Remove when in front of via
-            if (entity.type == EntityTypes.ARMOR_STAND && player.getClientVersion().isOlderThan(ClientVersion.V_1_8)) return;
+            if (entity.getType() == EntityTypes.ARMOR_STAND && player.getClientVersion().isOlderThan(ClientVersion.V_1_8)) return;
 
             if (player.gamemode == GameMode.CREATIVE || player.gamemode == GameMode.SPECTATOR) return;
             if (player.compensatedEntities.getSelf().inVehicle()) return;
@@ -120,7 +119,7 @@ public class Reach extends Check implements PacketCheck {
     // Meaning that the other check should be the only one that flags.
     private boolean isKnownInvalid(PacketEntity reachEntity) {
         // If the entity doesn't exist, or if it is exempt, or if it is dead
-        if ((blacklisted.contains(reachEntity.type) || !reachEntity.isLivingEntity()) && reachEntity.type != EntityTypes.END_CRYSTAL)
+        if ((blacklisted.contains(reachEntity.getType()) || !reachEntity.isLivingEntity()) && reachEntity.getType() != EntityTypes.END_CRYSTAL)
             return false; // exempt
 
         if (player.gamemode == GameMode.CREATIVE || player.gamemode == GameMode.SPECTATOR) return false;
@@ -131,10 +130,10 @@ public class Reach extends Check implements PacketCheck {
             return checkReach(reachEntity, new Vector3d(player.x, player.y, player.z), true) != null; // If they flagged
         } else {
             SimpleCollisionBox targetBox = reachEntity.getPossibleCollisionBoxes();
-            if (reachEntity.type == EntityTypes.END_CRYSTAL) {
-                targetBox = new SimpleCollisionBox(reachEntity.desyncClientPos.subtract(1, 0, 1), reachEntity.desyncClientPos.add(1, 2, 1));
+            if (reachEntity.getType() == EntityTypes.END_CRYSTAL) {
+                targetBox = new SimpleCollisionBox(reachEntity.trackedServerPosition.getPos().subtract(1, 0, 1), reachEntity.trackedServerPosition.getPos().add(1, 2, 1));
             }
-            return ReachUtils.getMinReachToBox(player, targetBox) > 3;
+            return ReachUtils.getMinReachToBox(player, targetBox) > player.compensatedEntities.getSelf().getEntityInteractRange();
         }
     }
 
@@ -145,10 +144,10 @@ public class Reach extends Check implements PacketCheck {
             if (reachEntity != null) {
                 String result = checkReach(reachEntity, attack.getValue(), false);
                 if (result != null) {
-                    if (reachEntity.type == EntityTypes.PLAYER) {
+                    if (reachEntity.getType() == EntityTypes.PLAYER) {
                         flagAndAlert(result);
                     } else {
-                        flagAndAlert(result + " type=" + reachEntity.type.getName().getKey());
+                        flagAndAlert(result + " type=" + reachEntity.getType().getName().getKey());
                     }
                 }
             }
@@ -159,8 +158,8 @@ public class Reach extends Check implements PacketCheck {
     private String checkReach(PacketEntity reachEntity, Vector3d from, boolean isPrediction) {
         SimpleCollisionBox targetBox = reachEntity.getPossibleCollisionBoxes();
 
-        if (reachEntity.type == EntityTypes.END_CRYSTAL) { // Hardcode end crystal box
-            targetBox = new SimpleCollisionBox(reachEntity.desyncClientPos.subtract(1, 0, 1), reachEntity.desyncClientPos.add(1, 2, 1));
+        if (reachEntity.getType() == EntityTypes.END_CRYSTAL) { // Hardcode end crystal box
+            targetBox = new SimpleCollisionBox(reachEntity.trackedServerPosition.getPos().subtract(1, 0, 1), reachEntity.trackedServerPosition.getPos().add(1, 2, 1));
         }
 
         // 1.7 and 1.8 players get a bit of extra hitbox (this is why you should use 1.8 on cross version servers)
@@ -198,10 +197,12 @@ public class Reach extends Check implements PacketCheck {
             }
         }
 
+        // +3 would be 3 + 3 = 6, which is the pre-1.20.5 behaviour, preventing "Missed Hitbox"
+        final double distance = player.compensatedEntities.getSelf().getEntityInteractRange() + 3;
         for (Vector lookVec : possibleLookDirs) {
             for (double eye : player.getPossibleEyeHeights()) {
                 Vector eyePos = new Vector(from.getX(), from.getY() + eye, from.getZ());
-                Vector endReachPos = eyePos.clone().add(new Vector(lookVec.getX() * 6, lookVec.getY() * 6, lookVec.getZ() * 6));
+                Vector endReachPos = eyePos.clone().add(new Vector(lookVec.getX() * distance, lookVec.getY() * distance, lookVec.getZ() * distance));
 
                 Vector intercept = ReachUtils.calculateIntercept(targetBox, eyePos, endReachPos).getFirst();
 
@@ -217,11 +218,11 @@ public class Reach extends Check implements PacketCheck {
         }
 
         // if the entity is not exempt and the entity is alive
-        if ((!blacklisted.contains(reachEntity.type) && reachEntity.isLivingEntity()) || reachEntity.type == EntityTypes.END_CRYSTAL) {
+        if ((!blacklisted.contains(reachEntity.getType()) && reachEntity.isLivingEntity()) || reachEntity.getType() == EntityTypes.END_CRYSTAL) {
             if (minDistance == Double.MAX_VALUE) {
                 cancelBuffer = 1;
                 return "Missed hitbox";
-            } else if (minDistance > 3) {
+            } else if (minDistance > player.compensatedEntities.getSelf().getEntityInteractRange()) {
                 cancelBuffer = 1;
                 return String.format("%.5f", minDistance) + " blocks";
             } else {

@@ -24,10 +24,42 @@ import org.bukkit.util.Vector;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * PlayerRespawnS2CPacket info (1.20.2+):
+ * If the world is different (check via registry key), world is recreated (all entities etc destroyed).
+ * <p>
+ * Client player is ALWAYS recreated
+ * <p>
+ * If the packet has the `KEEP_TRACKED_DATA` flag:
+ * Sneaking and Sprinting fields are kept on the new client player.
+ * <p>
+ * If the packet has the `KEEP_ATTRIBUTES` flag:
+ * Attributes are kept.
+ * <p>
+ * New client player is initialised:
+ * Pose is set to standing.
+ * Velocity is set to zero.
+ * Pitch is set to 0.
+ * Yaw is set to -180.
+ */
+// TODO update for 1.20.2-
 public class PacketPlayerRespawn extends PacketListenerAbstract {
 
     public PacketPlayerRespawn() {
         super(PacketListenerPriority.HIGH);
+    }
+
+    private static final byte KEEP_ATTRIBUTES = 1;
+    private static final byte KEEP_TRACKED_DATA = 2;
+    private static final byte KEEP_ALL = 3;
+
+    private boolean hasFlag(WrapperPlayServerRespawn respawn, byte flag) {
+        // This packet was added in 1.16
+        // On versions older than 1.16, via keeps all data.
+        if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_16)) {
+            return true;
+        }
+        return (respawn.getKeptData() & flag) != 0;
     }
 
     @Override
@@ -74,7 +106,7 @@ public class PacketPlayerRespawn extends PacketListenerAbstract {
             player.dimension = joinGame.getDimension();
 
             if (PacketEvents.getAPI().getServerManager().getVersion().isOlderThan(ServerVersion.V_1_17)) return;
-            player.compensatedWorld.setDimension(joinGame.getDimension().getDimensionName(), event.getUser());
+            player.compensatedWorld.setDimension(joinGame.getDimension(), event.getUser());
         }
 
         if (event.getPacketType() == PacketType.Play.Server.RESPAWN) {
@@ -101,11 +133,19 @@ public class PacketPlayerRespawn extends PacketListenerAbstract {
             player.latencyUtils.addRealTimeTask(player.lastTransactionSent.get() + 1, () -> {
                 player.isSneaking = false;
                 player.lastOnGround = false;
+                player.onGround = false;
                 player.isInBed = false;
                 player.packetStateData.packetPlayerOnGround = false; // If somewhere else pulls last ground to fix other issues
                 player.packetStateData.lastClaimedPosition = new Vector3d();
                 player.filterMojangStupidityOnMojangStupidity = new Vector3d();
-                player.lastSprintingForSpeed = false; // This is reverted even on 1.18 clients
+
+                if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_19_4)) {
+                    if (!this.hasFlag(respawn, KEEP_TRACKED_DATA)) {
+                        player.isSprinting = false;
+                    }
+                } else {
+                    player.lastSprintingForSpeed = false;
+                }
 
                 player.checkManager.getPacketCheck(BadPacketsE.class).handleRespawn(); // Reminder ticks reset
 
@@ -139,7 +179,21 @@ public class PacketPlayerRespawn extends PacketListenerAbstract {
                 player.clientVelocity = new Vector();
                 player.gamemode = respawn.getGameMode();
                 if (PacketEvents.getAPI().getServerManager().getVersion().isNewerThanOrEquals(ServerVersion.V_1_17)) {
-                    player.compensatedWorld.setDimension(respawn.getDimension().getDimensionName(), event.getUser());
+                    player.compensatedWorld.setDimension(respawn.getDimension(), event.getUser());
+                }
+
+                // TODO And there should probably be some attribute holder that we can just call reset() on.
+                if (player.getClientVersion().isNewerThanOrEquals(ClientVersion.V_1_16) && !this.hasFlag(respawn, KEEP_ATTRIBUTES)) {
+                    // Reset attributes if not kept
+                    final PacketEntitySelf self = player.compensatedEntities.getSelf();
+                    self.gravityAttribute = 0.08d;
+                    self.stepHeight = 0.6f;
+                    self.scale = 1.0f;
+                    self.setJumpStrength(0.42f);
+                    self.setBreakSpeedMultiplier(1.0f);
+                    self.setBlockInteractRange(4.5);
+                    self.setEntityInteractRange(3.0);
+                    player.compensatedEntities.hasSprintingAttributeEnabled = false;
                 }
             });
         }
