@@ -1,16 +1,15 @@
-//import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission
 
 plugins {
     id("java")
     id("maven-publish")
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.freefair.lombok") version "8.6"
-    //id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
+    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
-
 group = "ac.grim.grimac"
-version = "2.3.65"
+version = "2.3.66"
 description = "Libre simulation anticheat designed for 1.20 with 1.8-1.20 support, powered by PacketEvents 2.0."
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
@@ -31,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.retrooper:packetevents-spigot:2.3.1-SNAPSHOT")
+    implementation("com.github.retrooper:packetevents-spigot:2.4.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("club.minnced:discord-webhooks:0.8.0") // Newer versions include kotlin-stdlib, which leads to incompatibility with plugins that use Kotlin
     implementation("it.unimi.dsi:fastutil:8.5.13")
@@ -48,21 +47,23 @@ dependencies {
     compileOnly("io.netty:netty-all:4.1.85.Final")
 }
 
-/*bukkit {
+bukkit {
     name = "GrimAC"
     author = "GrimAC"
-
     main = "ac.grim.grimac.GrimAC"
     apiVersion = "1.13"
+    foliaSupported = true
 
     softDepend = listOf(
         "ProtocolLib",
         "ProtocolSupport",
-        "ViaVersion",
         "Essentials",
+        "ViaVersion",
         "ViaBackwards",
         "ViaRewind",
-        "Geyser-Spigot"
+        "Geyser-Spigot",
+        "floodgate",
+        "FastLogin"
     )
 
     permissions {
@@ -111,8 +112,7 @@ dependencies {
             default = Permission.Default.FALSE
         }
     }
-
-}*/
+}
 
 tasks.build {
     dependsOn(tasks.shadowJar)
