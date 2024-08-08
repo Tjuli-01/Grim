@@ -38,9 +38,6 @@ public class AimStaticY extends Check implements RotationCheck {
             }
         } else {
             buffer = Math.max(0, buffer -decay);
-            if(buffer == 0) {
-                reward();
-            }
         }
 
 

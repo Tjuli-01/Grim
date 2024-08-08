@@ -42,9 +42,6 @@ public class AimConstant extends Check implements RotationCheck {
             }
         } else {
             buffer = Math.max(0, buffer -decay);
-            if(buffer == 0) {
-                reward();
-            }
         }
         lastDeltaX = deltaX;
         lastDeltaY = deltaY;
