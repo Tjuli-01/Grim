@@ -34,6 +34,7 @@ import com.github.retrooper.packetevents.protocol.player.GameMode;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.protocol.world.BlockFace;
 import com.github.retrooper.packetevents.protocol.world.Dimension;
+import com.github.retrooper.packetevents.protocol.world.dimension.DimensionType;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
@@ -121,6 +122,7 @@ public class GrimPlayer implements GrimUser {
     public boolean wasSneaking;
     public boolean isSprinting;
     public boolean lastSprinting;
+    public String teamName;
     // The client updates sprinting attribute at end of each tick
     // Don't false if the server update's the player's sprinting status
     public boolean lastSprintingForSpeed;
@@ -189,7 +191,7 @@ public class GrimPlayer implements GrimUser {
     public int minPlayerAttackSlow = 0;
     public int maxPlayerAttackSlow = 0;
     public GameMode gamemode;
-    public Dimension dimension;
+    public DimensionType dimensionType;
     public Vector3d bedPosition;
     public long lastBlockPlaceUseItem = 0;
     public AtomicInteger cancelledPackets = new AtomicInteger(0);
