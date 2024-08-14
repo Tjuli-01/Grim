@@ -38,16 +38,12 @@ public class InventoryA extends Check implements PacketCheck {
                 if (delta > minDelta && delta != lastDelta && slot != lastSlot && delta < 750) {
                     samples.add(delta);
                 }
-                else {
-                    samples.clear();
-                }
                 lastTime = time;
                 lastDelta = delta;
                 lastSlot = slot;
                 if (samples.size() != sampleSize) {
                     return;
                 }
-
                 final long average = BetterStream.getAverageLong(samples);
                 if (average <= maxAverage) {
                     flagAndAlert("avg=" + average);

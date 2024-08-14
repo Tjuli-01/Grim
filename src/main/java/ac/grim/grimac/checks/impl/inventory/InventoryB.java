@@ -54,8 +54,6 @@ public class InventoryB extends Check implements PacketCheck {
                 final int ping = player.getTransactionPing();
                 if (delta < 750 && event.getTimestamp() - lastQuickMoveWithItem > 100 && slot != lastSlot && ping < maxPing){
                     samples.add(delta);
-                } else{
-                    samples.clear();
                 }
                 lastTime = time;
                 lastSlot = slot;
