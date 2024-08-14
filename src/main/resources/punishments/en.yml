@@ -73,6 +73,7 @@ Punishments:
       - "Place"
       - "Baritone"
       - "FastBreak"
+      - "FastPlace"
       - "TransactionOrder"
     commands:
       - "10:5 [alert]"
@@ -83,14 +84,16 @@ Punishments:
     checks:
       - "Killaura"
       - "Aim"
+      - "AutoClicker"
     commands:
       - "5:5 [alert]"
       - "5:5 [webhook]"
       - "5:5 [proxy]"
-  # As of 2.2.10, there are no AutoClicker checks and this is a placeholder. Grim will include AutoClicker checks in the future.
-  Autoclicker:
+  Inventory:
     remove-violations-after: 300
     checks:
-      - "Autoclicker"
+      - "Inventory"
     commands:
-      - "20:40 [alert]"
+      - "5:5 [alert]"
+      - "5:5 [webhook]"
+      - "5:5 [proxy]"

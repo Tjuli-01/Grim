@@ -234,6 +234,28 @@ KillauraAccuracy:
   maxCombatDuration: 10
   minAverageTargetMovement: 0.3
 
+FastPlace:
+  #the maximum average to flag
+  maxAverage: 50
+  sampleSize: 15
+
+  #the minimum delta to add to the sample
+  minDelta: 30
+
+AutoClickerLimit:
+  maxCPS: 17
+  minDelta: 20
+
+InventoryA:
+  maxAverage: 65
+  sampleSize: 5
+  minDelta: 30
+
+InventoryB:
+  maxAverage: 10
+  maxPing: 100
+  sampleSize: 5
+
 
 # Enable logging plugins who have injected into netty on join to debug compatibility issues
 debug-pipeline-on-join: false

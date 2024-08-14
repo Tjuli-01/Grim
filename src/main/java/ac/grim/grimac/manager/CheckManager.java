@@ -4,6 +4,7 @@ package ac.grim.grimac.manager;
 import ac.grim.grimac.api.AbstractCheck;
 import ac.grim.grimac.checks.impl.aim.*;
 import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
+import ac.grim.grimac.checks.impl.autoclicker.AutoClickerLimit;
 import ac.grim.grimac.checks.impl.badpackets.*;
 import ac.grim.grimac.checks.impl.baritone.Baritone;
 import ac.grim.grimac.checks.impl.combat.Reach;
@@ -11,11 +12,10 @@ import ac.grim.grimac.checks.impl.crash.*;
 import ac.grim.grimac.checks.impl.exploit.ExploitA;
 import ac.grim.grimac.checks.impl.exploit.ExploitB;
 import ac.grim.grimac.checks.impl.groundspoof.NoFallA;
+import ac.grim.grimac.checks.impl.inventory.InventoryA;
+import ac.grim.grimac.checks.impl.inventory.InventoryB;
 import ac.grim.grimac.checks.impl.killaura.KillauraAccuracy;
-import ac.grim.grimac.checks.impl.misc.ClientBrand;
-import ac.grim.grimac.checks.impl.misc.FastBreak;
-import ac.grim.grimac.checks.impl.misc.GhostBlockMitigation;
-import ac.grim.grimac.checks.impl.misc.TransactionOrder;
+import ac.grim.grimac.checks.impl.misc.*;
 import ac.grim.grimac.checks.impl.movement.*;
 import ac.grim.grimac.checks.impl.post.PostCheck;
 import ac.grim.grimac.checks.impl.prediction.DebugHandler;
@@ -97,6 +97,10 @@ public class CheckManager {
                 .put(BadPacketsY.class, new BadPacketsY(player))
                 .put(BadPacketsZ.class, new BadPacketsZ(player))
                 .put(FastBreak.class, new FastBreak(player))
+                .put(FastPlace.class, new FastPlace(player))
+                .put(AutoClickerLimit.class, new AutoClickerLimit(player))
+                .put(InventoryA.class, new InventoryA(player))
+                .put(InventoryB.class, new InventoryB(player))
                 .put(TransactionOrder.class, new TransactionOrder(player))
                 .put(NoSlowB.class, new NoSlowB(player))
                 .put(SetbackBlocker.class, new SetbackBlocker(player)) // Must be last class otherwise we can't check while blocking packets
